@@ -56,7 +56,7 @@ def compileSvg (cfg : Config) (source : String) : IO (Except String String) := d
       args := #["compile", "--format", "svg", inPath.toString, outPath.toString]
     }
     if out.exitCode != 0 then
-      let err := out.stderr.trim
+      let err := out.stderr.trimAscii.toString
       -- If the executable does not exist, Lean reports it as a child-process failure (not an exception).
       if (err.splitOn "could not execute external process").length > 1 then
         return .error (missingBinMsg bin err)
