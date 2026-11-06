@@ -1,0 +1,6 @@
+name = "TypstInfoview"
+version = "0.1.0"
+defaultTargets = ["TypstInfoview"]
+
+[[lean_lib]]
+name = "TypstInfoview"
