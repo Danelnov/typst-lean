@@ -65,7 +65,7 @@ instance {α : Type u} {β : Type u} [ToTypst α] [ToTypst β] : ToTypst (α × 
   ⟨fun (a, b) => Typst.paren (toTypst a ++ ", " ++ toTypst b)⟩
 
 instance {α : Type u} [ToTypst α] : ToTypst (List α) :=
-  ⟨fun xs => ", ".intercalate (xs.map toTypst)⟩
+  ⟨fun xs => "\\, ".intercalate (xs.map toTypst)⟩
 
 instance {α : Type u} [ToTypst α] : ToTypst (Array α) :=
   ⟨fun xs => toTypst xs.toList⟩

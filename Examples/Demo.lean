@@ -28,7 +28,7 @@ def Expr.toTypst : Expr → String
 instance : ToTypst Expr := ⟨Expr.toTypst⟩
 
 open Expr in
-#typst div (add (var "x") (num 1)) (pow (var "y") (num 2))
+#typst add (div (add (var "x") (num 1)) (pow (var "y") (num 2))) (num 1)
 
 -- 3. Handwritten Typst in markup mode, with a custom preamble
 set_option typst.mode "markup" in
