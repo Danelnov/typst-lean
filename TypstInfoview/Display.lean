@@ -46,7 +46,7 @@ def display (stx : Syntax) (body : String)
     | .error msg => [("error", (msg : String))]
   if warn then
     if let .error msg := result then
-      withRef stx <| logWarning m!"typst: la compilación falló (detalles en el Infoview)\n{msg}"
+      withRef stx <| logWarning m!"typst: compilation failed (details in the Infoview)\n{msg}"
   savePanelWidgetInfo (hash typstView.javascript) (pure props) stx
 
 end Typst

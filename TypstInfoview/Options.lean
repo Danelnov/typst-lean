@@ -6,25 +6,25 @@ import Lean
 
 register_option typst.theme : String := {
   defValue := "auto"
-  descr := "Tema del Infoview para #typst: \"auto\" (detectar), \"light\" (letras negras) o \"dark\" (letras blancas)."
+  descr := "Infoview theme for #typst: \"auto\" (detect), \"light\" (black text) or \"dark\" (white text)."
 }
 
 register_option typst.bin : String := {
   defValue := ""
-  descr := "Ruta al ejecutable de Typst. Vacío: usa la variable de entorno TYPST_BIN y, si no existe, `typst` del PATH."
+  descr := "Path to the Typst executable. Empty: use the TYPST_BIN environment variable and, if absent, `typst` from PATH."
 }
 
 register_option typst.preamble : String := {
   defValue := ""
-  descr := "Código Typst que se antepone al documento (imports, #set, definiciones...)."
+  descr := "Typst code prepended to the document (imports, #set, definitions...)."
 }
 
 register_option typst.mode : String := {
   defValue := "math"
-  descr := "\"math\": el resultado de ToTypst se envuelve en `$ ... $`. \"markup\": se usa tal cual."
+  descr := "\"math\": the result of ToTypst is wrapped in `$ ... $`. \"markup\": used as-is."
 }
 
 register_option typst.showSource : Bool := {
   defValue := true
-  descr := "Mostrar (plegado) el código Typst generado debajo del resultado."
+  descr := "Show (folded) the generated Typst code below the result."
 }

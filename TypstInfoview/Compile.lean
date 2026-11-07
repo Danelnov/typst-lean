@@ -47,9 +47,9 @@ private def cacheLimit : Nat := 512
 
 /-- Help message shown when the executable cannot be launched. -/
 def missingBinMsg (bin detail : String) : String :=
-  s!"No se pudo ejecutar '{bin}': {detail}\n" ++
-  "Instala Typst o indica su ruta con `set_option typst.bin \"/ruta/a/typst\"` " ++
-  "(o con la variable de entorno TYPST_BIN, definida antes de abrir el editor)."
+  s!"Could not run '{bin}': {detail}\n" ++
+  "Install Typst or specify its path with `set_option typst.bin \"/path/to/typst\"` " ++
+  "(or via the TYPST_BIN environment variable, defined before opening the editor)."
 
 /-- Compiles `source` to SVG without using the cache. -/
 def compileSvgUncached (cfg : Config) (source : String) : IO (Except String String) := do
@@ -68,7 +68,7 @@ def compileSvgUncached (cfg : Config) (source : String) : IO (Except String Stri
       -- If the executable does not exist, Lean reports it as a child-process failure (not an exception).
       if (err.splitOn "could not execute external process").length > 1 then
         return .error (missingBinMsg bin err)
-      return .error (if err.isEmpty then s!"typst terminó con código {out.exitCode}" else err)
+      return .error (if err.isEmpty then s!"typst exited with code {out.exitCode}" else err)
     return .ok (← IO.FS.readFile outPath)
   catch e =>
     -- Typically, the executable does not exist or is not on Lean's process PATH.
