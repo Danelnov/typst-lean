@@ -1,4 +1,5 @@
 import Lean
+import Std.Data.HashMap
 
 /-!
 # External call to the Typst compiler
@@ -37,14 +38,21 @@ def assemble (cfg : Config) (body : String) : String :=
   let body := if cfg.mode == "math" then "$ " ++ body ++ " $" else body
   internalPrelude ++ cfg.preamble ++ "\n" ++ body ++ "\n"
 
+/-- In-memory cache (per Lean server process) of successful compilations.
+Key: executable + full document. It avoids recompiling the steps that did not change
+when a command is re-elaborated (for example, every time a derivation is edited). -/
+initialize svgCache : IO.Ref (Std.HashMap String String) ← IO.mkRef {}
+
+private def cacheLimit : Nat := 512
+
 /-- Help message shown when the executable cannot be launched. -/
 def missingBinMsg (bin detail : String) : String :=
   s!"No se pudo ejecutar '{bin}': {detail}\n" ++
   "Instala Typst o indica su ruta con `set_option typst.bin \"/ruta/a/typst\"` " ++
   "(o con la variable de entorno TYPST_BIN, definida antes de abrir el editor)."
 
-/-- Compiles `source` to SVG. Returns `.error` with Typst's message (stderr) on failure. -/
-def compileSvg (cfg : Config) (source : String) : IO (Except String String) := do
+/-- Compiles `source` to SVG without using the cache. -/
+def compileSvgUncached (cfg : Config) (source : String) : IO (Except String String) := do
   let bin ← resolveBin cfg.bin
   let (h, inPath) ← IO.FS.createTempFile
   let outPath : System.FilePath := inPath.toString ++ ".svg"
@@ -68,5 +76,16 @@ def compileSvg (cfg : Config) (source : String) : IO (Except String String) := d
   finally
     try IO.FS.removeFile inPath catch _ => pure ()
     try IO.FS.removeFile outPath catch _ => pure ()
+
+/-- Compiles `source` to SVG. Returns `.error` with Typst's message (stderr) on failure.
+Uses `svgCache`; only successful compilations are stored. -/
+def compileSvg (cfg : Config) (source : String) : IO (Except String String) := do
+  let key := cfg.bin ++ "\x00" ++ source
+  if let some svg := (← svgCache.get)[key]? then
+    return .ok svg
+  let res ← compileSvgUncached cfg source
+  if let .ok svg := res then
+    svgCache.modify fun m => (if m.size ≥ cacheLimit then {} else m).insert key svg
+  return res
 
 end Typst
